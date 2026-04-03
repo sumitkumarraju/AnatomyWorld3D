@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   AnatomyWorld3D — Evergreen Medical Design System
+   Color Palette: Deep Evergreen → Forest Jade → Mint Bloom → Soft Pistachio
+   ============================================ */
+
+:root {
+  --deep-evergreen: #1B512D;
+  --forest-jade: #1C7C54;
+  --mint-bloom: #73E2A7;
+  --soft-pistachio: #DEF4C6;
+  --cream-white: #F0F7E8;
+  --obsidian: #0d1f14;
+  --dark-forest: #122a1a;
+
+  /* RGB variants for alpha usage */
+  --forest-jade-rgb: 28, 124, 84;
+  --mint-bloom-rgb: 115, 226, 167;
+  --soft-pistachio-rgb: 222, 244, 198;
+  --deep-evergreen-rgb: 27, 81, 45;
+
+  /* Glass properties */
+  --glass-blur: 20px;
+  --glass-saturation: 180%;
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--obsidian);
+  color: var(--cream-white);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background: rgba(var(--mint-bloom-rgb), 0.3);
+  color: var(--cream-white);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--obsidian);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--forest-jade-rgb), 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--forest-jade-rgb), 0.6);
+}
+
+/* ============================================
+   Glass Effect Classes
+   ============================================ */
+
+@layer components {
+  /* Primary Glass Panel */
+  .glass-panel {
+    @apply relative overflow-hidden rounded-2xl;
+    background: linear-gradient(135deg, rgba(18, 42, 26, 0.75), rgba(18, 42, 26, 0.35));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    border: 1px solid rgba(var(--forest-jade-rgb), 0.15);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--mint-bloom-rgb), 0.2), transparent);
+  }
+
+  /* Glass Panel Hover */
+  .glass-panel-hover {
+    @apply glass-panel transition-all duration-300 cursor-pointer;
+  }
+
+  .glass-panel-hover:hover {
+    border-color: rgba(var(--mint-bloom-rgb), 0.3);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(var(--mint-bloom-rgb), 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+  }
+
+  /* Glass Button */
+  .glass-button {
+    @apply relative px-6 py-3 rounded-xl font-medium text-sm tracking-wide overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, rgba(var(--forest-jade-rgb), 0.15), rgba(var(--forest-jade-rgb), 0.05));
+    border: 1px solid rgba(var(--forest-jade-rgb), 0.3);
+    color: var(--mint-bloom);
+    backdrop-filter: blur(10px);
+  }
+
+  .glass-button:hover {
+    background: linear-gradient(135deg, rgba(var(--forest-jade-rgb), 0.25), rgba(var(--forest-jade-rgb), 0.1));
+    border-color: rgba(var(--mint-bloom-rgb), 0.4);
+    box-shadow: 0 0 20px rgba(var(--mint-bloom-rgb), 0.15);
+    transform: translateY(-1px);
+  }
+
+  .glass-button:active {
+    transform: scale(0.97);
+  }
+
+  .glass-button-primary {
+    @apply glass-button;
+    background: linear-gradient(135deg, var(--forest-jade), var(--deep-evergreen));
+    color: var(--soft-pistachio);
+    font-weight: 600;
+    border: 1px solid rgba(var(--mint-bloom-rgb), 0.2);
+  }
+
+  .glass-button-primary:hover {
+    background: linear-gradient(135deg, rgba(var(--forest-jade-rgb), 1), rgba(var(--deep-evergreen-rgb), 0.9));
+    box-shadow: 0 0 30px rgba(var(--mint-bloom-rgb), 0.25);
+  }
+
+  /* Glass Input */
+  .glass-input {
+    @apply w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-300;
+    background: rgba(13, 31, 20, 0.6);
+    border: 1px solid rgba(var(--forest-jade-rgb), 0.15);
+    color: var(--cream-white);
+    backdrop-filter: blur(10px);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .glass-input::placeholder {
+    color: rgba(var(--soft-pistachio-rgb), 0.4);
+  }
+
+  .glass-input:focus {
+    border-color: rgba(var(--mint-bloom-rgb), 0.4);
+    box-shadow: 0 0 20px rgba(var(--mint-bloom-rgb), 0.08);
+  }
+
+  /* Glass Nav */
+  .glass-nav {
+    @apply fixed top-0 left-0 right-0 z-50;
+    background: linear-gradient(180deg, rgba(13, 31, 20, 0.92), rgba(13, 31, 20, 0.75));
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(var(--forest-jade-rgb), 0.1);
+  }
+
+  /* Glow Text */
+  .text-glow {
+    text-shadow: 0 0 20px rgba(var(--mint-bloom-rgb), 0.4),
+                 0 0 40px rgba(var(--mint-bloom-rgb), 0.15);
+  }
+
+  /* Organ Label */
+  .organ-label {
+    @apply px-3 py-1.5 rounded-full text-xs font-mono font-medium tracking-wider uppercase;
+    background: rgba(18, 42, 26, 0.85);
+    border: 1px solid rgba(var(--forest-jade-rgb), 0.25);
+    color: var(--mint-bloom);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Pulse animation for heart */
+  .pulse-heart {
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+
+  /* Grid pattern overlay */
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(var(--forest-jade-rgb), 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--forest-jade-rgb), 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+/* ============================================
+   Gradient Text – Nordica style with green palette
+   ============================================ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--mint-bloom), var(--soft-pistachio));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, var(--forest-jade), var(--mint-bloom));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.08); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.05); }
+  60% { transform: scale(1); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  50% { transform: scaleX(1.06) scaleY(1.1); }
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+  10% { opacity: 1; scale: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) translateX(20px) scale(0.5); opacity: 0; }
+}
+
+@keyframes scanLine {
+  0% { top: -5%; }
+  100% { top: 105%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(var(--mint-bloom-rgb), 0.3), transparent);
+  animation: scanLine 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Responsive canvas container */
+.canvas-container {
+  @apply w-full h-full;
+}
+
+.canvas-container canvas {
+  @apply w-full h-full;
+  outline: none;
+}
+
+/* Page transitions */
+.page-enter {
+  @apply animate-fade-in;
+}
+
+/* Auth background pattern */
+.auth-bg-pattern {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(var(--forest-jade-rgb), 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(var(--mint-bloom-rgb), 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(var(--deep-evergreen-rgb), 0.08) 0%, transparent 60%);
+}
+
+/* Divider with gradient */
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--forest-jade-rgb), 0.3), transparent);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
