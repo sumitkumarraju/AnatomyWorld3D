@@ -77,8 +77,7 @@ export default function OrganInfoPanel() {
               <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    AI Surgeon's Insight
+                    <Sparkles className="w-3.5 h-3.5" />            AI Surgeon&apos;s Insight                    AI Surgeon's Insight
                   </h3>
                 </div>
                 
