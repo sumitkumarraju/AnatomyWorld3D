@@ -109,8 +109,7 @@ export default function LoginPage() {
             )}
           </motion.button>
         </form>
-
-        <p className="text-center text-xs text-soft-pistachio/50 mt-6">
+          Don&apos;t have an account?{' '}        <p className="text-center text-xs text-soft-pistachio/50 mt-6">
           Don't have an account?{' '}
           <Link href="/auth/signup" className="text-mint-bloom hover:underline">
             Sign up
