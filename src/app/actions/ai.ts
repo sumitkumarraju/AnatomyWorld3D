@@ -2,9 +2,8 @@
 
 import Bytez from "bytez.js";
 
-// Ensure you have BYTES_API_KEY in your .env.local if you want to obscure this later,
-// but for now we are using the key provided by the user.
-const BYTEZ_API_KEY = "08a27cede3df772c2307277454e82f28";
+// The Bytez AI API key should be stored in Vercel Environment Variables going forward.
+const BYTEZ_API_KEY = process.env.BYTEZ_API_KEY || "";
 
 export async function getOrganClinicalDetails(organName: string) {
   try {
