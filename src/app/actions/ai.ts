@@ -1,18 +1,12 @@
 'use server';
 
-import Bytez from "bytez.js";
-
 export async function getOrganClinicalDetails(organName: string) {
   try {
     const BYTEZ_API_KEY = process.env.BYTEZ_API_KEY;
 
     if (!BYTEZ_API_KEY) {
-      console.error("BYTEZ_API_KEY is not set in environment variables.");
-      throw new Error("AI service is not configured. Please set the BYTEZ_API_KEY environment variable.");
+      throw new Error("AI service is not configured. BYTEZ_API_KEY is missing.");
     }
-
-    const sdk = new Bytez(BYTEZ_API_KEY);
-    const model = sdk.model("openai/gpt-5.2");
 
     const prompt = `As an expert surgeon and anatomy professor, provide a concise but highly detailed clinical deep dive about the human ${organName}. 
 Include:
@@ -21,33 +15,38 @@ Include:
 3. Crucial vascular supply and innervation details.
 Format the output as clean HTML without any markdown wrappers or code blocks. Use <strong> tags for emphasis. Keep it under 250 words.`;
 
-    const { error, output } = await model.run([
-      {
-        role: "user",
-        content: prompt
-      }
-    ]);
+    const response = await fetch("https://api.bytez.com/models/v2/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Key ${BYTEZ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 400,
+      }),
+    });
 
-    if (error) {
-      console.error("Bytez API Error:", JSON.stringify(error));
-      throw new Error("AI model returned an error.");
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Bytez API HTTP error:", response.status, errorText);
+      throw new Error(`API request failed with status ${response.status}: ${errorText}`);
     }
 
-    // The output from Bytez standard chat completions is usually in output or output[0].message.content
-    let content = "";
-    if (typeof output === 'string') {
-      content = output;
-    } else if (Array.isArray(output) && output.length > 0 && output[0].message) {
-       content = (output[0].message as any).content || "";
-    } else if (output && typeof output === 'object') {
-       content = JSON.stringify(output);
-    }
-    
-    // Clean up generic markdown backticks if the model ignores the instruction
+    const data = await response.json();
+    let content = data?.choices?.[0]?.message?.content || "";
+
+    // Clean up any markdown backticks if the model ignores the instruction
     content = content.replace(/```html/g, "").replace(/```/g, "").trim();
 
     if (!content) {
-      throw new Error("AI returned empty response.");
+      throw new Error("AI returned an empty response.");
     }
 
     return content;
