@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { organs } from '@/lib/data/organs';
 import { Search } from 'lucide-react';
@@ -9,7 +9,7 @@ export default function OrganSidebar() {
   const { 
     selectedOrgan, setSelectedOrgan, 
     searchQuery, setSearchQuery, 
-    isSidebarOpen,
+    isSidebarOpen, setSidebarOpen,
     isSurgicalMode, setSurgicalMode 
   } = useAppStore();
 
@@ -19,14 +19,28 @@ export default function OrganSidebar() {
   );
 
   return (
-    <motion.aside
-      initial={{ x: -20, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      className={`fixed left-4 top-20 bottom-4 w-[260px] z-20 transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-[280px]'
-      }`}
-    >
-      <div className="glass-panel h-full flex flex-col pt-4">
+    <>
+      {/* Mobile backdrop */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.aside
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className={`fixed left-0 lg:left-4 top-16 lg:top-20 bottom-0 lg:bottom-4 w-[280px] lg:w-[260px] z-30 transition-transform duration-300 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:-translate-x-[280px]'
+        }`}
+      >
+      <div className="glass-panel h-full flex flex-col pt-4 rounded-none lg:rounded-2xl border-l-0 lg:border-l">
         {/* Search */}
         <div className="px-4 pb-4 border-b border-white/[0.06]">
           <div className="relative">
@@ -122,5 +136,6 @@ export default function OrganSidebar() {
         </div>
       </div>
     </motion.aside>
+    </>
   );
 }

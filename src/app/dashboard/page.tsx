@@ -16,6 +16,6 @@ export default async function Dashboard() {
   const { activities, modulesProgress } = await getDashboardData();
 
   return (
-    <DashboardContent modules={modulesProgress} activities={activities} />
+    <DashboardContent modules={modulesProgress} activities={activities} user={user} />
   );
 }

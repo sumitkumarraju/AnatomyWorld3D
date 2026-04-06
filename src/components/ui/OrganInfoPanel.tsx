@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/lib/store/useAppStore';
 import { organs } from '@/lib/data/organs';
 import { 
   X, Activity, Weight, Maximize, BrainCircuit, AlertTriangle, Lightbulb, 
-  Heart, Zap, Scissors, Droplets, Sparkles, Loader2
+  Heart, Zap, Scissors, Droplets, Sparkles, Loader2, CheckCircle2, Circle
 } from 'lucide-react';
 import { getOrganClinicalDetails } from '@/app/actions/ai';
+import { getOrganProgressState, toggleOrganExplored } from '@/app/actions/progress';
 
 export default function OrganInfoPanel() {
   const { selectedOrgan, setSelectedOrgan } = useAppStore();
@@ -19,10 +20,34 @@ export default function OrganInfoPanel() {
 
   // Clear AI output if organ changes
   const [lastOrgan, setLastOrgan] = useState<string | null>(null);
-  if (selectedOrgan !== lastOrgan) {
-    setLastOrgan(selectedOrgan);
-    setAiInsights(null);
-  }
+  
+  // Progress tracking
+  const [progressState, setProgressState] = useState({ isExplored: false, canMark: false });
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
+
+  useEffect(() => {
+    if (selectedOrgan !== lastOrgan) {
+      setLastOrgan(selectedOrgan);
+      setAiInsights(null);
+    }
+  }, [selectedOrgan, lastOrgan]);
+
+  useEffect(() => {
+    if (organ) {
+      setProgressState({ isExplored: false, canMark: false });
+      getOrganProgressState(organ.slug).then(setProgressState);
+    }
+  }, [organ]);
+
+  const handleToggleRead = async () => {
+    if (!organ) return;
+    setIsLoadingProgress(true);
+    const result = await toggleOrganExplored(organ.slug, organ.name, progressState.isExplored);
+    if (result.success) {
+      setProgressState(prev => ({ ...prev, isExplored: !prev.isExplored }));
+    }
+    setIsLoadingProgress(false);
+  };
 
   const handleGenerateAI = async () => {
     if (!organ) return;
@@ -41,15 +66,15 @@ export default function OrganInfoPanel() {
     <AnimatePresence>
       {organ && (
         <motion.div
-          initial={{ opacity: 0, x: 40, scale: 0.95 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 40, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="absolute right-4 top-4 bottom-4 w-[400px] z-20 hidden lg:block"
+          className="fixed inset-x-0 bottom-0 top-[25vh] z-40 lg:top-20 lg:bottom-4 lg:inset-x-auto lg:right-4 lg:left-auto lg:w-[400px]"
         >
-          <div className="glass-panel h-full overflow-y-auto custom-scrollbar">
+          <div className="glass-panel h-full overflow-y-auto custom-scrollbar rounded-t-3xl border-b-0 lg:rounded-2xl lg:border-b shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-white/[0.06] sticky top-0 bg-[#0a1a14]/90 backdrop-blur-xl z-10">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.06] sticky top-0 bg-[#0a1a14]/90 backdrop-blur-xl z-10 rounded-t-3xl lg:rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-lg"
@@ -62,13 +87,36 @@ export default function OrganInfoPanel() {
                   <p className="text-xs text-soft-pistachio/50 font-mono uppercase tracking-wider">{organ.system}</p>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedOrgan(null)}
-                className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center transition-colors"
-                aria-label="Close panel"
-              >
-                <X className="w-4 h-4 text-soft-pistachio/60" />
-              </button>
+              <div className="flex items-center gap-2">
+                {progressState.canMark && (
+                  <button
+                    onClick={handleToggleRead}
+                    disabled={isLoadingProgress}
+                    className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      progressState.isExplored 
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30' 
+                        : 'bg-white/[0.05] text-soft-pistachio hover:bg-white/[0.1] border border-white/[0.05]'
+                    } ${isLoadingProgress ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={progressState.isExplored ? "Mark as unread" : "Mark as read"}
+                  >
+                    {isLoadingProgress ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : progressState.isExplored ? (
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    ) : (
+                      <Circle className="w-3.5 h-3.5" />
+                    )}
+                    {progressState.isExplored ? 'Completed' : 'Mark as Read'}
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedOrgan(null)}
+                  className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center transition-colors"
+                  aria-label="Close panel"
+                >
+                  <X className="w-4 h-4 text-soft-pistachio/60" />
+                </button>
+              </div>
             </div>
 
             {/* Content */}

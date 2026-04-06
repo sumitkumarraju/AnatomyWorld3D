@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Link from 'next/link';
+import { logout } from '@/app/actions/auth';
+import { generateDemoData } from '@/app/actions/progress';
 
 export default async function AccountPage() {
   const supabase = createClient();
@@ -27,6 +29,10 @@ export default async function AccountPage() {
           <h2 className="text-xl text-cream-white font-medium mb-4">Profile Information</h2>
           <div className="space-y-4">
             <div>
+              <label className="text-sm text-soft-pistachio/60 font-mono">Full Name</label>
+              <p className="text-cream-white mt-1 text-lg">{user.user_metadata?.full_name || 'N/A'}</p>
+            </div>
+            <div>
               <label className="text-sm text-soft-pistachio/60 font-mono">Email Address</label>
               <p className="text-cream-white mt-1 text-lg">{user.email}</p>
             </div>
@@ -40,13 +46,31 @@ export default async function AccountPage() {
             </div>
           </div>
 
-          <div className="mt-8 pt-8 border-t border-white/[0.05]">
+          <div className="mt-8 pt-8 border-t border-white/[0.05] flex flex-wrap items-center gap-4">
             <Link 
               href="/dashboard"
               className="inline-block bg-mint-bloom hover:bg-mint-bloom/90 text-deep-pine font-medium px-6 py-3 rounded-xl transition-colors"
             >
               Go to Dashboard
             </Link>
+
+            <form action={generateDemoData}>
+              <button 
+                type="submit"
+                className="inline-block bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 font-medium px-6 py-3 rounded-xl transition-colors"
+              >
+                Generate Demo Data
+              </button>
+            </form>
+
+            <form action={logout} className="ml-auto">
+              <button 
+                type="submit"
+                className="inline-block bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-medium px-6 py-3 rounded-xl transition-colors"
+              >
+                Sign Out
+              </button>
+            </form>
           </div>
         </div>
       </div>

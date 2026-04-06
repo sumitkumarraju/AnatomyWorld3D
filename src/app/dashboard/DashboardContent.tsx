@@ -3,8 +3,9 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Header from '@/components/layout/Header';
-import { Activity, BookOpen, Clock, User } from 'lucide-react';
+import { Activity, BookOpen, Clock, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import type { User } from '@supabase/supabase-js';
 
 type ModuleProgress = {
   id: string;
@@ -22,6 +23,7 @@ type ActivityLog = {
 interface DashboardContentProps {
   modules: ModuleProgress[];
   activities: ActivityLog[];
+  user: User;
 }
 
 // Simple lookup to assign icons to known modules
@@ -34,7 +36,7 @@ const moduleIcons: Record<string, any> = {
   '6': Activity, // Urinary
 };
 
-export default function DashboardContent({ modules, activities }: DashboardContentProps) {
+export default function DashboardContent({ modules, activities, user }: DashboardContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -59,8 +61,8 @@ export default function DashboardContent({ modules, activities }: DashboardConte
           className="mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-mint-bloom text-sm font-mono mb-4">
-            <User className="w-4 h-4" />
-            <span>Welcome back, Doctor</span>
+            <UserIcon className="w-4 h-4" />
+            <span>Welcome back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Doctor'}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-semibold text-cream-white tracking-tight">
             Your Medical Workspace

@@ -35,14 +35,30 @@ export async function signup(formData: FormData) {
     }
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  let { error } = await supabase.auth.signUp(data);
 
-  if (error) {
+  // If the user already exists, auto-login with the provided credentials
+  if (error && error.message.toLowerCase().includes('already registered')) {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (signInError) {
+      // Differentiate between generic login errors and invalid credentials
+      if (signInError.message.toLowerCase().includes('invalid login credentials')) {
+        return { error: 'Account already exists. Please use the correct password to log in.' };
+      }
+      return { error: signInError.message };
+    }
+    // Successfully logged in an existing user
+    error = null;
+  } else if (error) {
     return { error: error.message };
   }
 
   revalidatePath('/', 'layout');
-  redirect('/account');
+  redirect('/dashboard');
 }
 
 export async function logout() {
