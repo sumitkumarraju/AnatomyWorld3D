@@ -3,10 +3,10 @@
 import Bytez from "bytez.js";
 
 // The Bytez AI API key should be stored in Vercel Environment Variables going forward.
-const BYTEZ_API_KEY = process.env.BYTEZ_API_KEY || "";
 
 export async function getOrganClinicalDetails(organName: string) {
   try {
+    const BYTEZ_API_KEY = process.env.BYTEZ_API_KEY || "";
     const sdk = new Bytez(BYTEZ_API_KEY);
     const model = sdk.model("openai/gpt-5.2");
 
